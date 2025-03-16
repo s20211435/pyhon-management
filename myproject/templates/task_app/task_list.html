@@ -1,0 +1,16 @@
+<!-- filepath: c:\docker_code\myproject\templates\task_app\task_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task List</title>
+</head>
+<body>
+    <h1>Task List</h1>
+    <ul>
+        {% for task in tasks %}
+            <li>{{ task.title }} - {{ task.status }} - {{ task.due_date|date:"Y/m/d H:i:s" }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'task_create' %}">新しいタスクを追加</a>
+</body>
+</html>
