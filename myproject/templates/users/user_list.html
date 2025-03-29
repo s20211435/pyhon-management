@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}ユーザー一覧{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">ユーザー一覧</h2>
+<div class="d-flex justify-content-end mb-3">
+    <a href="{% url 'user_create' %}" class="btn btn-primary">
+        <i class="fa-solid fa-square-plus"></i> 新規ユーザー作成
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        {% for user in users %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title mb-0">{{ user.username }}</h5>
+                            <p class="card-text text-muted mb-0">ID: {{ user.id }}</p>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-primary me-2 edit-user-btn" data-user-id="{{ user.id }}">
+                                <i class="fa-solid fa-pen-to-square"></i> 編集
+                            </button>
+                            <a href="{% url 'user_delete' user.id %}" class="btn btn-sm btn-danger">
+                                <i class="fa-solid fa-trash"></i> 削除
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- フォームを表示するモーダル -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">ユーザー編集</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+            </div>
+            <div class="modal-body" id="editUserModalBody">
+                <!-- フォームがここに挿入されます -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const editButtons = document.querySelectorAll('.edit-user-btn');
+        const modalBody = document.getElementById('editUserModalBody');
+        const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+
+        editButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-user-id');
+                fetch(`/users/${userId}/edit/ajax/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success === false) {
+                            modalBody.innerHTML = data.html;
+                            modal.show();
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
+{% endblock %}
